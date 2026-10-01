@@ -1,0 +1,17 @@
+name: LuckyChests
+version: '1.0.0'
+main: org.pawling.luckychests.LuckyChestsPlugin
+api-version: '1.21.11'
+author: Pawling CSD Game Development
+description: Adds Awesome, Good, and Bad lucky chests to newly generated chunks.
+
+commands:
+  luckychest:
+    description: LuckyChests testing tools
+    usage: /luckychest <spawn|inspect> [awesome|good|bad|random]
+    permission: luckychests.admin
+
+permissions:
+  luckychests.admin:
+    description: Allows LuckyChests testing commands
+    default: op

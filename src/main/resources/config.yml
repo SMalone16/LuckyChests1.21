@@ -1,0 +1,21 @@
+# Chance that a newly generated chunk receives one Lucky Chest.
+# 0.08 = 8% of new chunks, or roughly one chest per 12-13 chunks on average.
+spawn-chance-per-new-chunk: 0.08
+
+# How many random surface locations inside the selected chunk are tried.
+placement-attempts: 8
+
+# Keep generated chests within the vertical range that the classroom
+# Eaglercraft 1.12.2 client can reliably display.
+minimum-y: 1
+maximum-y: 254
+
+# Empty means all NORMAL worlds. Add names to restrict generation.
+enabled-worlds:
+  - world
+
+# Type weights. Equal weights match the original three-type design.
+type-weights:
+  awesome: 1
+  good: 1
+  bad: 1
