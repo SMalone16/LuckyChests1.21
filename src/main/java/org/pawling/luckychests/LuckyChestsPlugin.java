@@ -22,7 +22,10 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -232,6 +235,10 @@ public final class LuckyChestsPlugin extends JavaPlugin implements Listener, Tab
         for (int i = 0; i < count; i++) {
             inventory.addItem(createEnchantedDiamondItem(pool.get(i), random));
         }
+
+        if (isCrossModLootEnabled()) {
+            addAwesomeCrossModLoot(inventory);
+        }
     }
 
     private ItemStack createEnchantedDiamondItem(Material material, Random random) {
@@ -271,6 +278,64 @@ public final class LuckyChestsPlugin extends JavaPlugin implements Listener, Tab
                 new ItemStack(Material.TORCH, 48),
                 new ItemStack(Material.COOKED_BEEF, 12 + random.nextInt(13))
         );
+
+        if (isCrossModLootEnabled()) {
+            addGoodCrossModLoot(inventory, random);
+        }
+    }
+
+    private boolean isCrossModLootEnabled() {
+        return getConfig().getBoolean("cross-mod-loot.enabled", true);
+    }
+
+    private void addGoodCrossModLoot(Inventory inventory, Random random) {
+        // Plane progression: useful vanilla resources that match the EaglerAirplane recipe.
+        inventory.addItem(
+                new ItemStack(Material.IRON_BLOCK, 1),
+                new ItemStack(Material.REDSTONE_BLOCK, 1),
+                createWaterBreathingPotion(180)
+        );
+
+        // One extra survival/progression reward. These are useful with the current
+        // airplane, zombie-temple, and Locust classroom plugins, but remain normal
+        // vanilla items when those plugins are not selected for the session.
+        switch (random.nextInt(3)) {
+            case 0 -> inventory.addItem(new ItemStack(Material.DIAMOND, 1));
+            case 1 -> inventory.addItem(new ItemStack(Material.SHIELD, 1));
+            default -> inventory.addItem(new ItemStack(Material.GOLDEN_APPLE, 1));
+        }
+    }
+
+    private void addAwesomeCrossModLoot(Inventory inventory) {
+        // A complete set of vanilla ingredients for one Plane Kit:
+        // I D I / R F R / I D I
+        inventory.addItem(
+                new ItemStack(Material.IRON_BLOCK, 4),
+                new ItemStack(Material.DIAMOND, 2),
+                new ItemStack(Material.REDSTONE_BLOCK, 2),
+                new ItemStack(Material.FURNACE, 1),
+
+                // EaglerSpace treats Water Breathing as a continuous oxygen supply.
+                createWaterBreathingPotion(480),
+                createWaterBreathingPotion(480),
+
+                // Extra protection for the zombie-temple and Locust encounters.
+                new ItemStack(Material.SHIELD, 1),
+                new ItemStack(Material.GOLDEN_APPLE, 2)
+        );
+    }
+
+    private ItemStack createWaterBreathingPotion(int durationSeconds) {
+        ItemStack potion = new ItemStack(Material.POTION, 1);
+        if (potion.getItemMeta() instanceof PotionMeta meta) {
+            meta.addCustomEffect(
+                    new PotionEffect(PotionEffectType.WATER_BREATHING, durationSeconds * 20, 0),
+                    true
+            );
+            meta.setDisplayName(ChatColor.AQUA + "Oxygen Supply (" + (durationSeconds / 60) + " min)");
+            potion.setItemMeta(meta);
+        }
+        return potion;
     }
 
     private void spawnSkeletonTrap(Block chestBlock, Random random) {

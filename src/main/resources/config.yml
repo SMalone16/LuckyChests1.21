@@ -19,3 +19,8 @@ type-weights:
   awesome: 1
   good: 1
   bad: 1
+
+# Cross-mod rewards connect Lucky Chests to the optional classroom plugins in
+# Eaglercraft-1.21.11-Server. Disable this to keep only the original loot tables.
+cross-mod-loot:
+  enabled: true
