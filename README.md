@@ -63,3 +63,6 @@ dist/LuckyChests-1.0.0.jar
 ```
 
 The classroom server repository is configured to fetch this JAR automatically during startup.
+
+## Optional Zombie and Undercity synergy
+When EaglerZombiesFall26 is selected, **Good** chests include one and **Awesome** chests include two tagged Anti-Zombie Splash Potions. They cure infected players and provide ten nonstacking seconds of infection immunity; neither loot type otherwise changes if the Zombies plugin is missing. EaglerCity marks one hidden Undercity treasure chest with the type `ULTIMATE`. On its **first opening only**, LuckyChests chooses an equal-probability outcome: (a) every one of the eight possible enchanted-diamond Awesome items plus the existing Awesome cross-plugin resources (and antidotes while Zombies runs), or (b) exactly one Ultimate Undercity Elixir potion. When consumed, the elixir gives its drinker and any companions in the hidden 3×3 loot chamber temporary Creative Mode, managed by the Zombie plugin. If Zombies is absent the elixir remains collectible but has no special creative effect. Every generated ordinary Lucky Chest still works on its own.
