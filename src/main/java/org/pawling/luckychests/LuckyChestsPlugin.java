@@ -41,7 +41,8 @@ public final class LuckyChestsPlugin extends JavaPlugin implements Listener, Tab
     private enum LuckyType {
         AWESOME,
         GOOD,
-        BAD
+        BAD,
+        ULTIMATE // only the EaglerCity temple's pre-tagged treasure chest
     }
 
     private NamespacedKey typeKey;
@@ -209,6 +210,7 @@ public final class LuckyChestsPlugin extends JavaPlugin implements Listener, Tab
         switch (type) {
             case AWESOME -> fillAwesomeChest(inventory, random);
             case GOOD -> fillGoodChest(inventory, random);
+            case ULTIMATE -> fillUltimateChest(inventory, random);
             case BAD -> {
                 inventory.addItem(new ItemStack(Material.SHIELD, 1));
                 Block chestBlock = chest.getBlock();
@@ -239,6 +241,51 @@ public final class LuckyChestsPlugin extends JavaPlugin implements Listener, Tab
         if (isCrossModLootEnabled()) {
             addAwesomeCrossModLoot(inventory);
         }
+        if (getServer().getPluginManager().isPluginEnabled("EaglerZombiesFall26"))
+            inventory.addItem(createAntiZombiePotion(), createAntiZombiePotion());
+    }
+
+
+    private void fillUltimateChest(Inventory inventory, Random random) {
+        // Exactly one reward class is selected only on the first open.
+        if (random.nextBoolean()) {
+            for (Material material : List.of(Material.DIAMOND_SWORD,
+                    Material.DIAMOND_AXE, Material.DIAMOND_PICKAXE, Material.DIAMOND_SHOVEL,
+                    Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE,
+                    Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS))
+                inventory.addItem(createEnchantedDiamondItem(material, random));
+            if (isCrossModLootEnabled()) addAwesomeCrossModLoot(inventory);
+            if (getServer().getPluginManager().isPluginEnabled("EaglerZombiesFall26"))
+                inventory.addItem(createAntiZombiePotion(), createAntiZombiePotion());
+        } else {
+            inventory.addItem(createCreativeElixir());
+        }
+    }
+
+    private static ItemStack createAntiZombiePotion() {
+        ItemStack item = new ItemStack(Material.SPLASH_POTION);
+        PotionMeta meta = (PotionMeta) item.getItemMeta();
+        meta.setBasePotionType(org.bukkit.potion.PotionType.HEALING);
+        meta.setDisplayName(ChatColor.GREEN + "Anti-Zombie Splash Potion");
+        meta.setLore(List.of(ChatColor.GRAY + "Cures infected players.",
+                ChatColor.GRAY + "Grants 10 seconds of immunity, not stackable."));
+        meta.getPersistentDataContainer().set(
+                new NamespacedKey("luckychests", "anti_zombie"), PersistentDataType.BYTE, (byte) 1);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private static ItemStack createCreativeElixir() {
+        ItemStack item = new ItemStack(Material.POTION);
+        PotionMeta meta = (PotionMeta) item.getItemMeta();
+        meta.setBasePotionType(org.bukkit.potion.PotionType.STRENGTH);
+        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Ultimate Undercity Elixir");
+        meta.setLore(List.of(ChatColor.GOLD + "Grants temporary Creative Mode",
+                ChatColor.GRAY + "to you and all players in the treasure chamber."));
+        meta.getPersistentDataContainer().set(
+                new NamespacedKey("luckychests", "creative_elixir"), PersistentDataType.BYTE, (byte) 1);
+        item.setItemMeta(meta);
+        return item;
     }
 
     private ItemStack createEnchantedDiamondItem(Material material, Random random) {
@@ -282,6 +329,8 @@ public final class LuckyChestsPlugin extends JavaPlugin implements Listener, Tab
         if (isCrossModLootEnabled()) {
             addGoodCrossModLoot(inventory, random);
         }
+        if (getServer().getPluginManager().isPluginEnabled("EaglerZombiesFall26"))
+            inventory.addItem(createAntiZombiePotion());
     }
 
     private boolean isCrossModLootEnabled() {
